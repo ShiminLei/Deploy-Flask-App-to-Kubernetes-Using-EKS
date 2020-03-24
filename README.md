@@ -50,9 +50,6 @@ Completing the project involves several steps:
 
    ```
    eksctl create cluster --name simple-jwt-api
-   
-   ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-   
    ```
 
 4. Store a secret using AWS Parameter Store
@@ -62,3 +59,23 @@ Completing the project involves several steps:
 6. Create a CodeBuild stage which will build, test, and deploy your code
 
 For more detail about each of these steps, see the project lesson [here](https://classroom.udacity.com/nanodegrees/nd004/parts/1d842ebf-5b10-4749-9e5e-ef28fe98f173/modules/ac13842f-c841-4c1a-b284-b47899f4613d/lessons/becb2dac-c108-4143-8f6c-11b30413e28d/concepts/092cdb35-28f7-4145-b6e6-6278b8dd7527).
+
+### Result IP
+
+```
+$ kubectl get services simple-jwt-api -o wide
+NAME             TYPE           CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)        AGE   SELECTOR
+simple-jwt-api   LoadBalancer   10.100.112.97   ac23d40b46da411ea9d850a7c07a9b1e-1675096220.us-west-2.elb.amazonaws.com   80:30849/TCP   77m   app=simple-jwt-api
+
+$ export TOKEN=`curl -d '{"email":"<EMAIL>","password":"<PASSWORD>"}' -H "Content-Type: application/json" -X POST ac23d40b46da411ea9d850a7c07a9b1e-1675096220.us-west-2.elb.amazonaws.com/auth  | jq -r '.token'`
+
+$ curl --request GET 'ac23d40b46da411ea9d850a7c07a9b1e-1675096220.us-west-2.elb.amazonaws.com/contents' -H "Authorization: Bearer ${TOKEN}" | jq 
+
+{
+  "email": "<EMAIL>",
+  "exp": 1586250754,
+  "nbf": 1585041154
+}
+
+```
+
